@@ -51,6 +51,8 @@ git clone --depth=1 -b kix https://github.com/QiuSimons/luci-app-daed.git packag
 git clone --depth=1 https://github.com/fw876/helloworld.git package/custom/ssrp
 
 # 功能插件
+git clone --depth=1 https://github.com/sirpdboy/luci-app-poweroffdevice.git package/custom/poweroffdevice
+
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky.git package/custom/lucky
 git clone --depth=1 https://github.com/sbwml/luci-app-openlist2.git package/custom/openlist2
 
