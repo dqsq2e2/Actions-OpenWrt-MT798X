@@ -130,17 +130,18 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
 
-    # 5. 更新并安装 Feeds
+    # 5.0. 更新并安装 Feeds
     - name: Update feeds （Feeds更新）
       run: cd openwrt && ./scripts/feeds update -a
 
     - name: Install feeds （Feeds安装）
       run: cd openwrt && ./scripts/feeds install -a
 
-    # 5.1. 安装 NAS / iStore
+    # 5.5. 安装 NAS / iStore
     - name: Install NAS & iStore
       run: |
         cd openwrt
+        ./scripts/feeds update nas nas_luci istore
         ./scripts/feeds install -a -p nas
         ./scripts/feeds install -a -p nas_luci
         ./scripts/feeds install -d y -p istore luci-app-store
