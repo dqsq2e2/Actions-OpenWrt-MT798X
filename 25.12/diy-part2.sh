@@ -91,7 +91,7 @@ echo "✅ 移除了 Daed 中的 vmlinux-btf 虚拟依赖。"
 # 2. 强行打通内核 BPF 与 TC (Traffic Control) 前置依赖
 for conf in target/linux/mediatek/filogic/config-*; do
     # 【关键修正】：if 和 [ 之间必须有空格！
-    if[ -f "$conf" ]; then
+    if [ -f "$conf" ]; then
         echo ">>> 正在为 $conf 注入 eBPF/TC 核心与极致性能配置..."
         
         # --- 1. 流量控制 (TC) 前置大门 (缺失会导致 act_bpf 丢失) ---
@@ -122,4 +122,5 @@ done
 
 # 修改默认 IP (192.168.30.1)
 sed -i 's/192.168.6.1/192.168.30.1/g' package/base-files/files/bin/config_generate
+
 echo "✅ SSH2 配置完成。"
