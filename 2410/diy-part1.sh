@@ -53,6 +53,7 @@ UPDATE_PACKAGE "kucat-config" "sirpdboy/luci-app-kucat-config" "master"
 
 #科学插件
 UPDATE_PACKAGE "daed" "QiuSimons/luci-app-daed" "kix"
+UPDATE_PACKAGE "vmlinux-btf" "QiuSimons/vmlinux-btf" "master"
 UPDATE_PACKAGE "helloworld-ssrp" "fw876/helloworld" "master"
 UPDATE_PACKAGE "homeproxy" "VIKINGYFY/homeproxy" "main"
 UPDATE_PACKAGE "momo" "nikkinikki-org/OpenWrt-momo" "main"
