@@ -102,23 +102,7 @@ jobs:
 
         sudo -E timedatectl set-timezone "$TZ"
 
-        sudo -E apt-get install -y \
-          build-essential \
-          bc \
-          flex \
-          bison \
-          python3 \
-          xz-utils \
-          tar \
-          libssl-dev \
-          libelf-dev \
-          libfuse-dev \
-          clang \
-          llvm \
-          dwarves \
-          dos2unix \
-          npm
-
+        sudo -E apt-get install -yqq build-essential bc flex bison python3 xz-utils tar libssl-dev libelf-dev libfuse-dev clang llvm dwarves dos2unix nodejs npm
         sudo npm install -g pnpm
 
         sudo bash -c 'bash <(curl -sL https://build-scripts.immortalwrt.org/init_build_environment.sh)'
