@@ -72,12 +72,13 @@ if [ -n "$OPENLIST2_DIR" ]; then
 fi
 
 #修复Rust编译失败
-RUST_FILE=$(find feeds/packages -path "*/lang/rust/Makefile" 2>/dev/null | head -n 1)
+RUST_FILE=$(find ../feeds/packages/ -maxdepth 3 -type f -wholename "*/rust/Makefile")
+if [ -f "$RUST_FILE" ]; then
+	echo " "
 
-if [ -n "$RUST_FILE" ] && [ -f "$RUST_FILE" ]; then
-    sed -i 's/download-ci-llvm:=.*/download-ci-llvm:="if-unchanged"/g' "$RUST_FILE"
-    sed -i 's/download-ci-llvm=.*/download-ci-llvm="if-unchanged"/g' "$RUST_FILE"
-    echo "✅ Rust CI-LLVM build enabled (Safe Mode)!"
+	sed -i 's/ci-llvm=true/ci-llvm=false/g' $RUST_FILE
+
+	cd $PKG_PATH && echo "rust has been fixed!"
 fi
 
 # 修改默认 IP (192.168.30.1)
