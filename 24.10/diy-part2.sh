@@ -72,53 +72,13 @@ if [ -n "$OPENLIST2_DIR" ]; then
 fi
 
 #修复Rust编译失败
-RUST_FILE=$(find ../feeds/packages -path "*/lang/rust/Makefile" | head -n 1)
+RUST_FILE=$(find feeds/packages -path "*/lang/rust/Makefile" 2>/dev/null | head -n 1)
 
 if [ -n "$RUST_FILE" ] && [ -f "$RUST_FILE" ]; then
-    sed -i 's/ci-llvm=true/ci-llvm=false/g' "$RUST_FILE"
-    echo "Rust local LLVM build enabled!"
+    sed -i 's/download-ci-llvm:=.*/download-ci-llvm:="if-unchanged"/g' "$RUST_FILE"
+    sed -i 's/download-ci-llvm=.*/download-ci-llvm="if-unchanged"/g' "$RUST_FILE"
+    echo "✅ Rust CI-LLVM build enabled (Safe Mode)!"
 fi
-
-# =========================================================
-# 修复 eBPF 与 Daed 的内核依赖冲突 (终极性能版)
-# =========================================================
-echo ">>> [Kernel] 正在修复 eBPF/Daed 编译依赖..."
-
-# 1. 解决 vmlinux-btf 依赖警告
-find package feeds -name "Makefile" -path "*/daed/*" 2>/dev/null | xargs sed -i 's/+vmlinux-btf//g' 2>/dev/null || true
-echo "✅ 移除了 Daed 中的 vmlinux-btf 虚拟依赖。"
-
-# 2. 强行打通内核 BPF 与 TC (Traffic Control) 前置依赖
-for conf in target/linux/mediatek/filogic/config-*; do
-    # 【关键修正】：if 和 [ 之间必须有空格！
-    if [ -f "$conf" ]; then
-        echo ">>> 正在为 $conf 注入 eBPF/TC 核心与极致性能配置..."
-        
-        # --- 1. 流量控制 (TC) 前置大门 (缺失会导致 act_bpf 丢失) ---
-        echo "CONFIG_NET_SCHED=y" >> "$conf"
-        echo "CONFIG_NET_CLS=y" >> "$conf"
-        echo "CONFIG_NET_CLS_ACT=y" >> "$conf"
-        echo "CONFIG_NET_INGRESS=y" >> "$conf"
-        echo "CONFIG_NET_EGRESS=y" >> "$conf"
-        
-        # --- 2. BPF 核心与模块 ---
-        echo "CONFIG_NET_CLS_BPF=m" >> "$conf"
-        echo "CONFIG_NET_ACT_BPF=m" >> "$conf"
-        echo "CONFIG_BPF=y" >> "$conf"
-        echo "CONFIG_BPF_SYSCALL=y" >> "$conf"
-        echo "CONFIG_CGROUP_BPF=y" >> "$conf"
-        echo "CONFIG_DEBUG_INFO_BTF=y" >> "$conf"
-        
-        # --- 3. BPF 极致性能优化 (榨干路由器算力) ---
-        echo "CONFIG_BPF_JIT=y" >> "$conf"
-        echo "CONFIG_BPF_JIT_ALWAYS_ON=y" >> "$conf"
-        echo "CONFIG_BPF_STREAM_PARSER=y" >> "$conf"
-        echo "CONFIG_NET_SOCK_MSG=y" >> "$conf"
-        echo "CONFIG_XDP_SOCKETS=y" >> "$conf"
-        
-        echo "✅ eBPF 高性能与底层网络调度配置注入完成。"
-    fi
-done
 
 # 修改默认 IP (192.168.30.1)
 sed -i 's/192.168.6.1/192.168.30.1/g' package/base-files/files/bin/config_generate
