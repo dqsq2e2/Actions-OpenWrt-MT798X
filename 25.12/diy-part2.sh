@@ -83,12 +83,7 @@ fi
 # 修复 eBPF 与 Daed 的内核依赖冲突 (终极性能版)
 # =========================================================
 echo ">>> [Kernel] 正在修复 eBPF/Daed 编译依赖..."
-
-# 1. 解决 vmlinux-btf 依赖警告
-find package feeds -name "Makefile" -path "*/daed/*" 2>/dev/null | xargs sed -i 's/+vmlinux-btf//g' 2>/dev/null || true
-echo "✅ 移除了 Daed 中的 vmlinux-btf 虚拟依赖。"
-
-# 2. 强行打通内核 BPF 与 TC (Traffic Control) 前置依赖
+# 强行打通内核 BPF 与 TC (Traffic Control) 前置依赖
 for conf in target/linux/mediatek/filogic/config-*; do
     # 【关键修正】：if 和 [ 之间必须有空格！
     if [ -f "$conf" ]; then
@@ -100,15 +95,14 @@ for conf in target/linux/mediatek/filogic/config-*; do
         echo "CONFIG_NET_CLS_ACT=y" >> "$conf"
         echo "CONFIG_NET_INGRESS=y" >> "$conf"
         echo "CONFIG_NET_EGRESS=y" >> "$conf"
-        
+ 
         # --- 2. BPF 核心与模块 ---
         echo "CONFIG_NET_CLS_BPF=m" >> "$conf"
         echo "CONFIG_NET_ACT_BPF=m" >> "$conf"
         echo "CONFIG_BPF=y" >> "$conf"
         echo "CONFIG_BPF_SYSCALL=y" >> "$conf"
         echo "CONFIG_CGROUP_BPF=y" >> "$conf"
-        echo "CONFIG_DEBUG_INFO_BTF=y" >> "$conf"
-        
+
         # --- 3. BPF 极致性能优化 (榨干路由器算力) ---
         echo "CONFIG_BPF_JIT=y" >> "$conf"
         echo "CONFIG_BPF_JIT_ALWAYS_ON=y" >> "$conf"
