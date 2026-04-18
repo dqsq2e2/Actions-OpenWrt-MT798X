@@ -48,12 +48,12 @@ git clone --depth=1 https://github.com/sirpdboy/luci-app-poweroffdevice.git pack
 git clone --depth=1 https://github.com/isalikai/luci-app-owq-wol.git package/custom/owq-wol
 git clone --depth=1 https://github.com/gdy666/luci-app-lucky.git package/custom/lucky
 git clone --depth=1 https://github.com/sbwml/luci-app-openlist2.git package/custom/openlist2
-git clone --depth=1 https://github.com/janvanstiphout/luci-app-accesscontrol.git package/custom/accesscontrol
 
-git clone --depth=1 https://github.com/destan19/OpenAppFilter.git package/custom/OpenAppFilter
 git clone --depth=1 https://github.com/sirpdboy/luci-app-watchdog.git package/custom/watchdog
 git clone --depth=1 https://github.com/sirpdboy/luci-app-taskplan.git package/custom/taskplan
 git clone --depth=1 https://github.com/iv7777/luci-app-authshield.git package/custom/authshield
+git clone --depth=1 https://github.com/destan19/OpenAppFilter.git package/custom/OpenAppFilter
+git clone --depth=1 https://github.com/janvanstiphout/luci-app-accesscontrol.git package/custom/accesscontrol
 
 # VPN
 git clone --depth=1 https://github.com/EasyTier/luci-app-easytier.git package/custom/easytier
