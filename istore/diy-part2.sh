@@ -104,7 +104,7 @@ rm $WORKINGDIR/${LUCIBRANCH}.zip
 # 使用更强力的 grep 匹配确保绝对能找到 Makefile
 DAED_MK=$(find package feeds -name "Makefile" 2>/dev/null | grep "daed/daed/Makefile" | head -n 1)
 
-if[ -f "$DAED_MK" ]; then
+if [ -f "$DAED_MK" ]; then
     echo ">>> 正在执行 daed 前端构建终极修复..."
 
     # 1. 暴力清理原 Makefile 中带有缺陷的前端下载和构建逻辑
