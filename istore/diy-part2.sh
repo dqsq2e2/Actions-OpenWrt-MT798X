@@ -205,6 +205,30 @@ CONFIG_NET_ACT_BPF=m
 CONFIG_NET_CLS_BPF=m
 
 # =========================================================
+# Cgroup v2 完整支持（daed pname routing 必需）
+# =========================================================
+
+CONFIG_CGROUPS=y
+CONFIG_CGROUP_BPF=y
+CONFIG_CGROUP_CPUACCT=y
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CGROUP_FREEZER=y
+CONFIG_CGROUP_PIDS=y
+CONFIG_CGROUP_SCHED=y
+
+# 内存控制器（重要！）
+CONFIG_MEMCG=y
+CONFIG_MEMCG_SWAP=y
+CONFIG_MEMCG_SWAP_ENABLED=y
+
+# Cgroup v2 控制器
+CONFIG_CGROUP_PERF=y
+CONFIG_CGROUP_RDMA=y
+
+# 确保 unified hierarchy (cgroup v2)
+CONFIG_CGROUP_UNIFIED_HIERARCHY=y
+
+# =========================================================
 # XDP / 高速数据路径
 # =========================================================
 
