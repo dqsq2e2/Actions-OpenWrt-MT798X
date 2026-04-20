@@ -170,34 +170,29 @@ if [ -f "$RUST_FILE" ]; then
 	cd $PKG_PATH && echo "rust has been fixed!"
 fi
 
+# 额外添加 
 for conf in target/linux/mediatek/filogic/config-*; do
 cat >> $conf << 'EOF'
 
 # =========================================================
-# CPU 调度优化
+# CPU 调度优化（修正）
 # =========================================================
 
-CONFIG_PREEMPT=y
-CONFIG_PREEMPT_COUNT=y
-
-CONFIG_HZ_1000=y
-
+CONFIG_PREEMPT_VOLUNTARY=y
+CONFIG_HZ_250=y
 CONFIG_SCHED_AUTOGROUP=y
 
-
 # =========================================================
-# eBPF / Daed 极限性能
+# eBPF / Daed 核心
 # =========================================================
 
 CONFIG_BPF=y
 CONFIG_BPF_SYSCALL=y
-
 CONFIG_BPF_JIT=y
 CONFIG_BPF_JIT_ALWAYS_ON=y
-
 CONFIG_CGROUP_BPF=y
 CONFIG_SOCK_CGROUP_DATA=y
-
+CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
 
 # =========================================================
 # eBPF 网络调度
@@ -206,10 +201,8 @@ CONFIG_SOCK_CGROUP_DATA=y
 CONFIG_NET_SCHED=y
 CONFIG_NET_CLS=y
 CONFIG_NET_CLS_ACT=y
-
 CONFIG_NET_ACT_BPF=m
 CONFIG_NET_CLS_BPF=m
-
 
 # =========================================================
 # XDP / 高速数据路径
@@ -217,19 +210,21 @@ CONFIG_NET_CLS_BPF=m
 
 CONFIG_XDP_SOCKETS=y
 CONFIG_BPF_STREAM_PARSER=y
-
 CONFIG_NET_SOCK_MSG=y
 
+# =========================================================
+# 网络命名空间
+# =========================================================
+
+CONFIG_NET_NS=y
 
 # =========================================================
-# 高并发 Socket 优化
+# 诊断接口
 # =========================================================
 
 CONFIG_INET_DIAG=y
 CONFIG_INET_TCP_DIAG=y
-
 CONFIG_PACKET_DIAG=y
-
 
 # =========================================================
 # 网络性能增强
@@ -237,43 +232,30 @@ CONFIG_PACKET_DIAG=y
 
 CONFIG_NET_RX_BUSY_POLL=y
 CONFIG_BQL=y
-
 CONFIG_NET_FLOW_LIMIT=y
-
+CONFIG_TCP_FASTOPEN=y
 
 # =========================================================
-# MT798x 多核网络优化
+# MT7986 多核优化（关键！）
 # =========================================================
 
 CONFIG_RPS=y
 CONFIG_RFS_ACCEL=y
 CONFIG_XPS=y
 
-
 # =========================================================
 # TCP 优化
 # =========================================================
 
 CONFIG_TCP_CONG_BBR=y
-CONFIG_TCP_CONG_CUBIC=y
-
 CONFIG_DEFAULT_BBR=y
 CONFIG_DEFAULT_TCP_CONG="bbr"
-
-# =========================================================
-# 内核缓存优化
-# =========================================================
-
-CONFIG_SLAB_FREELIST_HARDENED=y
-CONFIG_SLAB_FREELIST_RANDOM=y
-
 
 # =========================================================
 # 高速包处理
 # =========================================================
 
 CONFIG_GRO_CELLS=y
-
 
 EOF
 done
