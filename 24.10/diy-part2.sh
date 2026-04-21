@@ -81,7 +81,9 @@ if [ -f "$RUST_FILE" ]; then
 	cd $PKG_PATH && echo "rust has been fixed!"
 fi
 
-# 内核支持的额外添加 
+# =========================================================
+# 4. 内核配置追加
+# =========================================================
 for conf in target/linux/mediatek/filogic/config-*; do
 cat >> $conf << 'EOF'
 
@@ -106,7 +108,6 @@ CONFIG_CGROUP_PIDS=y
 CONFIG_CGROUP_SCHED=y
 
 CONFIG_MEMCG=y
-CONFIG_MEMCG_SWAP=y
 
 CONFIG_SOCK_CGROUP_DATA=y
 
@@ -162,12 +163,43 @@ CONFIG_NET_FLOW_LIMIT=y
 CONFIG_TCP_FASTOPEN=y
 
 # =========================================================
+# MT7986 多核优化
+# =========================================================
+
+CONFIG_RPS=y
+CONFIG_RFS_ACCEL=y
+CONFIG_XPS=y
+
+# =========================================================
 # TCP 优化
 # =========================================================
 
 CONFIG_TCP_CONG_BBR=y
-CONFIG_DEFAULT_BBR=y
 CONFIG_DEFAULT_TCP_CONG="bbr"
+CONFIG_TCP_CONG_WESTWOOD=y
+CONFIG_TCP_CONG_HTCP=y
+CONFIG_TCP_MD5SIG=y
+CONFIG_SYN_COOKIES=y
+
+# =========================================================
+# Conntrack 优化
+# =========================================================
+
+CONFIG_NF_CONNTRACK_EVENTS=y
+CONFIG_NF_CONNTRACK_TIMESTAMP=y
+CONFIG_NF_CONNTRACK_LABELS=y
+CONFIG_NF_CT_NETLINK=y
+CONFIG_NF_CT_NETLINK_HELPER=y
+
+# =========================================================
+# 硬件加密加速（MT7986）
+# =========================================================
+
+CONFIG_CRYPTO_DEV_SAFEXCEL=y
+CONFIG_CRYPTO_HW=y
+CONFIG_CRYPTO_AES=y
+CONFIG_CRYPTO_GCM=y
+CONFIG_CRYPTO_CHACHA20POLY1305=y
 
 # =========================================================
 # 高速包处理
@@ -177,6 +209,44 @@ CONFIG_GRO_CELLS=y
 
 EOF
 done
+
+# =========================================================
+# Conntrack 表大小优化（写入 99-custom-network）
+# =========================================================
+mkdir -p files/etc/sysctl.d/
+
+cat > files/etc/sysctl.d/99-proxy-optimize.conf << 'SYSCTL'
+# 连接跟踪表扩大（代理高并发必需）
+net.netfilter.nf_conntrack_max=65536
+net.netfilter.nf_conntrack_tcp_timeout_established=7200
+net.netfilter.nf_conntrack_udp_timeout=60
+net.netfilter.nf_conntrack_udp_timeout_stream=180
+
+# TCP 优化
+net.core.somaxconn=4096
+net.core.netdev_max_backlog=4096
+net.ipv4.tcp_max_syn_backlog=4096
+net.ipv4.tcp_fastopen=3
+net.ipv4.tcp_slow_start_after_idle=0
+net.ipv4.tcp_tw_reuse=1
+net.ipv4.tcp_fin_timeout=30
+net.ipv4.tcp_keepalive_time=1200
+net.ipv4.tcp_max_tw_buckets=8192
+
+# UDP 优化
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.ipv4.udp_mem=8192 131072 16777216
+
+# DNS 缓存优化
+net.ipv4.ip_local_port_range=1024 65535
+
+# 开启转发（代理必需）
+net.ipv4.ip_forward=1
+net.ipv6.conf.all.forwarding=1
+SYSCTL
+
+echo "✅ 代理网络优化参数已写入"
 
 # 修改默认 IP (192.168.30.1)
 sed -i 's/192.168.6.1/192.168.30.1/g' package/base-files/files/bin/config_generate
