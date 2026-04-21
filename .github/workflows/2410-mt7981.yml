@@ -5,7 +5,7 @@ env:
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
   REPO_BRANCH: 2410
   FEEDS_CONF: feeds.conf.default
-  CONFIG_FILE: 2410/2410-mt7981
+  CONFIG_FILE: 2410/mt7981-2410.config
   DIY_P1_SH: 2410/diy-part1.sh
   DIY_P2_SH: 2410/diy-part2.sh
   UPLOAD_BIN_DIR: true
