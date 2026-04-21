@@ -160,6 +160,20 @@ if [ -n "$OPENLIST2_DIR" ]; then
     echo "✅ OpenList2 菜单已移动到 NAS"
 fi
 
+# =========================================================
+#  daed 编译优化
+# =========================================================
+echo ">>> 正在拉取 breeze303 版 daed 并执行排雷..."
+
+# 1. 扫除暗雷：替换会导致 Go 1.24+ 编译爆炸的 simd 实验参数
+# (巧妙替换为无害的 GOENV=off，既排了雷又不会破坏 Makefile 的斜杠换行语法)
+sed -i 's/GOEXPERIMENT=newinliner,simd/GOENV=off/g' package/luci-app-daed/daed/Makefile
+
+# 2. 防御性清理：以防他在 luci 面板的 Makefile 里遗留了 vmlinux-btf
+find package/luci-app-daed -type f -name "Makefile" -exec sed -i 's/+vmlinux-btf //g; s/+vmlinux-btf//g' {} +
+
+echo "✅ breeze303 版 daed 适配完毕！"
+
 # 修复Rust本地编译LLVM
 RUST_FILE="feeds/packages/lang/rust/Makefile"
 
@@ -183,11 +197,16 @@ for conf in target/linux/mediatek/filogic/config-*; do
 cat >> $conf << 'EOF'
 
 # =========================================================
-# Cgroup v2（daed 必需，精简版）
+# Cgroup v2（daed 必需）
 # =========================================================
 CONFIG_CGROUPS=y
 CONFIG_CGROUP_BPF=y
 CONFIG_SOCK_CGROUP_DATA=y
+CONFIG_CGROUP_CPUACCT=y
+CONFIG_CGROUP_DEVICE=y
+CONFIG_CGROUP_FREEZER=y
+CONFIG_CGROUP_PIDS=y
+CONFIG_MEMCG=y
 
 # =========================================================
 # eBPF / Daed 核心
@@ -197,6 +216,7 @@ CONFIG_BPF_SYSCALL=y
 CONFIG_BPF_JIT=y
 CONFIG_BPF_JIT_ALWAYS_ON=y
 CONFIG_BPF_UNPRIV_DEFAULT_OFF=y
+CONFIG_BPF_EVENTS=y
 
 # =========================================================
 # eBPF 网络调度
