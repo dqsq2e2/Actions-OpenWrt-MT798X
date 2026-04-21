@@ -262,7 +262,7 @@ jobs:
     # 14. 清理旧的 Release 发布
     # =========================================================
     - name: Remove old releases
-      uses: dev-drprasad/delete-older-releases@v0.3.5
+      uses: dev-drprasad/delete-older-releases@v0.3.4
       if: env.UPLOAD_RELEASE == 'true' && !cancelled()
       with:
         keep_latest: 10
