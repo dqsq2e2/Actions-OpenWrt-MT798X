@@ -160,7 +160,7 @@ if [ -n "$OPENLIST2_DIR" ]; then
     echo "✅ OpenList2 菜单已移动到 NAS"
 fi
 
-#修复Rust本地编译LLVM
+# 修复Rust本地编译LLVM
 RUST_FILE="feeds/packages/lang/rust/Makefile"
 
 if [ -f "$RUST_FILE" ]; then
