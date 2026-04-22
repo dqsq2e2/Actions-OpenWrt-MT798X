@@ -348,3 +348,23 @@ if [ -n "$HNAT_MAKEFILE" ]; then
 else
     echo "⚠️ 未找到 HNAT 配置文件，跳过"
 fi
+
+# =========================================================
+# 修复 S20M 系统概览页面 WiFi 温度显示问题
+# =========================================================
+echo ">>> 正在修复 S20M 温度显示（移除 WiFi 标签）..."
+
+TEMPINFO_SCRIPT=$(find package -type f -name "tempinfo" -path "*/autocore/files/arm/*" 2>/dev/null | head -1)
+
+if [ -n "$TEMPINFO_SCRIPT" ]; then
+    echo "找到 tempinfo 脚本: $TEMPINFO_SCRIPT"
+    
+    # 修改 MT798x 平台的温度输出，移除 WiFi 标签
+    # 原始: echo -n "CPU: ${cpu_temp}, WiFi: -"
+    # 修改为: echo -n "CPU: ${cpu_temp}"
+    sed -i 's/echo -n "CPU: \${cpu_temp}, WiFi: -"/echo -n "CPU: \${cpu_temp}"/' "$TEMPINFO_SCRIPT"
+    
+    echo "✅ 已修复 tempinfo 脚本，移除 WiFi 温度显示"
+else
+    echo "⚠️ 未找到 tempinfo 脚本，跳过"
+fi
