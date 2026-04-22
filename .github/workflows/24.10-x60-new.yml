@@ -2,8 +2,8 @@ name: 24.10-x60-new
 
 env:
   DEVICE_NAME: 24.10-x60-new
-  # REPO_URL: https://github.com/dailook/immortalwrt-mt798x-6.6
   REPO_URL: https://github.com/padavanonly/immortalwrt-mt798x-6.6
+  # REPO_URL: https://github.com/Yuzhii0718/immortalwrt-mt798x-6.6-padavanonly
   REPO_BRANCH: openwrt-24.10-6.6
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: 24.10/mt7986-x60-new.config
