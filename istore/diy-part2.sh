@@ -160,6 +160,20 @@ if [ -n "$OPENLIST2_DIR" ]; then
     echo "✅ OpenList2 菜单已移动到 NAS"
 fi
 
+# =========================================================
+#  daed 编译优化
+# =========================================================
+echo ">>> 正在拉取 breeze303 版 daed 并执行排雷..."
+
+# 1. 扫除暗雷：替换会导致 Go 1.24+ 编译爆炸的 simd 实验参数
+# (巧妙替换为无害的 GOENV=off，既排了雷又不会破坏 Makefile 的斜杠换行语法)
+sed -i 's/GOEXPERIMENT=newinliner,simd/GOENV=off/g' package/luci-app-daed/daed/Makefile
+
+# 2. 防御性清理：以防他在 luci 面板的 Makefile 里遗留了 vmlinux-btf
+find package/luci-app-daed -type f -name "Makefile" -exec sed -i 's/+vmlinux-btf //g; s/+vmlinux-btf//g' {} +
+
+echo "✅ breeze303 版 daed 适配完毕！"
+
 # 修复Rust本地编译LLVM
 RUST_FILE="feeds/packages/lang/rust/Makefile"
 
@@ -311,3 +325,26 @@ fi
 rm -f feeds.conf
 
 echo "✅ SSH2 配置完成。"
+
+# =========================================================
+# 修复 kmod-mediatek_hnat 错误依赖 wireless-tools
+# =========================================================
+echo ">>> 正在修复 kmod-mediatek_hnat 的 wireless-tools 依赖..."
+
+# 查找 hnat 的 Makefile
+HNAT_MAKEFILE=$(find package feeds -type f -name "Makefile" -path "*/kmod-mediatek_hnat/*" 2>/dev/null | head -1)
+
+if [ -z "$HNAT_MAKEFILE" ]; then
+    # 如果没找到独立的 Makefile，检查 modules.mk
+    HNAT_MAKEFILE=$(find target/linux/mediatek -type f -name "modules.mk" 2>/dev/null | head -1)
+fi
+
+if [ -n "$HNAT_MAKEFILE" ]; then
+    echo "找到 HNAT 配置文件: $HNAT_MAKEFILE"
+    # 移除 wireless-tools 依赖
+    sed -i 's/+wireless-tools//g' "$HNAT_MAKEFILE"
+    sed -i 's/wireless-tools//g' "$HNAT_MAKEFILE"
+    echo "✅ 已移除 kmod-mediatek_hnat 对 wireless-tools 的依赖"
+else
+    echo "⚠️ 未找到 HNAT 配置文件，跳过"
+fi
