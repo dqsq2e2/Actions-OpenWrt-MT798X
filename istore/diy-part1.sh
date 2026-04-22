@@ -35,9 +35,11 @@ git clone --depth=1 -b dev https://github.com/vernesong/OpenClash.git package/cu
 git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-nikki.git package/custom/nikki
 git clone --depth=1 https://github.com/nikkinikki-org/OpenWrt-momo.git package/custom/momo
 
-# Daed - 禁用，编译有问题（S20M 不需要）
-# git clone --depth=1 https://github.com/breeze303/luci-app-daed.git package/custom/daed
-# git clone --depth=1 https://github.com/QiuSimons/vmlinux-btf.git package/custom/vmlinux-btf
+# Daed
+git clone --depth=1 https://github.com/breeze303/luci-app-daed.git package/custom/daed
+# git clone --depth=1 -b master https://github.com/QiuSimons/luci-app-daed.git package/custom/daed
+# 添加 vmlinux-btf 模块
+git clone --depth=1 https://github.com/QiuSimons/vmlinux-btf.git package/custom/vmlinux-btf
 
 # SSR+
 git clone --depth=1 https://github.com/fw876/helloworld.git package/custom/ssrp
