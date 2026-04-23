@@ -286,10 +286,18 @@ TEMPINFO_SCRIPT=$(find package -type f -name "tempinfo" -path "*/autocore/files/
 if [ -n "$TEMPINFO_SCRIPT" ]; then
     echo "找到 tempinfo 脚本: $TEMPINFO_SCRIPT"
     
+    # 显示修改前的内容
+    echo "修改前内容:"
+    grep -n "WiFi:" "$TEMPINFO_SCRIPT" || echo "  (未找到 WiFi 相关行)"
+    
     # 修改 MT798x 平台的温度输出，移除 WiFi 标签
     # 原始: echo -n "CPU: ${cpu_temp}, WiFi: -"
     # 修改为: echo -n "CPU: ${cpu_temp}"
-    sed -i 's/echo -n "CPU: \${cpu_temp}, WiFi: -"/echo -n "CPU: \${cpu_temp}"/' "$TEMPINFO_SCRIPT"
+    sed -i 's/, WiFi: -//g' "$TEMPINFO_SCRIPT"
+    
+    # 显示修改后的内容
+    echo "修改后内容:"
+    grep -n "CPU:" "$TEMPINFO_SCRIPT" | head -3
     
     echo "✅ 已修复 tempinfo 脚本，移除 WiFi 温度显示"
 else
